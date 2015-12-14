@@ -93,7 +93,7 @@ public class Channel {
 
     private String buildHeader(String headerName) {
         //-2 because of a single space before and after the channel name
-        int remainingWidth = ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - headerName.length() - 2;
+        int remainingWidth = ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - headerName.length() - 4;
 
         StringBuilder header = new StringBuilder(ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
         //set a prefix

@@ -37,8 +37,9 @@ public class SwitchCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.DARK_RED + "A channel with that name doesn't exist");
                 } else {
                     selfSubscriber.switchChannel(channel);
+                    player.spigot().sendMessage(channel.getFormattedHeader(channel.getName()));
                     player.spigot().sendMessage(channel.getContent());
-                    sender.sendMessage(ChatColor.DARK_GREEN + "Changed channel");
+                    player.spigot().sendMessage(selfSubscriber.getChannelSelection());
                 }
             } else {
                 sender.sendMessage(ChatColor.DARK_RED + "Missing channel name");

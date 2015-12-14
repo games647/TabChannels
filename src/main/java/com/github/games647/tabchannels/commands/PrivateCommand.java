@@ -38,25 +38,39 @@ public class PrivateCommand implements CommandExecutor {
             } else if (self.equals(targetPlayer)) {
                 sender.sendMessage(ChatColor.DARK_RED + "You cannot message with yourself");
             } else {
-                //start a private chat
-                Subscriber selfSubscriber = plugin.getSubscribers().get(self.getUniqueId());
-
-                UUID targetUUID = targetPlayer.getUniqueId();
-                Subscriber targetSubscriber = plugin.getSubscribers().get(targetUUID);
-
-                String channelId = self.getUniqueId().toString() + targetUUID.toString();
-                Channel privateChannel = new Channel(channelId, "Private", true);
-                selfSubscriber.subscribe(privateChannel);
-                targetSubscriber.subscribe(privateChannel);
-
-                privateChannel.addRecipient(targetUUID);
-                privateChannel.addRecipient(self.getUniqueId());
-                plugin.getChannels().put(channelId, privateChannel);
+                startPrivateChat(self, targetPlayer);
             }
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Missing receiver name");
         }
 
         return true;
+    }
+
+    private void startPrivateChat(Player self, Player targetPlayer) {
+        //start a private chat
+        Subscriber selfSubscriber = plugin.getSubscribers().get(self.getUniqueId());
+
+        UUID targetUUID = targetPlayer.getUniqueId();
+        Subscriber targetSubscriber = plugin.getSubscribers().get(targetUUID);
+
+        String channelId = self.getUniqueId().toString() + targetUUID.toString();
+        Channel privateChannel = new Channel(channelId, "Private", true);
+        selfSubscriber.subscribe(privateChannel);
+        targetSubscriber.subscribe(privateChannel);
+
+        privateChannel.addRecipient(targetUUID);
+        privateChannel.addRecipient(self.getUniqueId());
+        plugin.getChannels().put(channelId, privateChannel);
+
+        sendNewChat(selfSubscriber, self);
+        sendNewChat(targetSubscriber, targetPlayer);
+    }
+
+    private void sendNewChat(Subscriber subscriber, Player player) {
+        Channel currentChannel = subscriber.getCurrentChannel();
+        player.spigot().sendMessage(currentChannel.getFormattedHeader(currentChannel.getName()));
+        player.spigot().sendMessage(currentChannel.getContent());
+        player.spigot().sendMessage(subscriber.getChannelSelection());
     }
 }

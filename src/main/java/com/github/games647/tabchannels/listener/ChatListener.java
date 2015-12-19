@@ -6,8 +6,6 @@ import com.github.games647.tabchannels.TabChannels;
 
 import java.util.UUID;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,21 +32,18 @@ public class ChatListener implements Listener {
         Channel currentChannel = subscriber.getCurrentChannel();
         currentChannel.addMessage(chatMessage);
 
-        //send the update chat history list to all recipients
-        BaseComponent[] content = currentChannel.getContent();
-
         //channel selection
         for (UUID recipient : currentChannel.getRecipients()) {
             Subscriber receiver = plugin.getSubscribers().get(recipient);
             if (receiver != null) {
+                Player recipientPlayer = Bukkit.getPlayer(recipient);
+
                 receiver.notifyNewMessage(currentChannel);
-                //ingore it if the player hasn't this channel open
-                if (currentChannel.equals(receiver.getCurrentChannel())) {
-                    Player recipientPlayer = Bukkit.getPlayer(recipient);
-                    sendHeader(recipientPlayer, currentChannel);
-                    recipientPlayer.spigot().sendMessage(content);
-                    recipientPlayer.spigot().sendMessage(receiver.getChannelSelection());
-                }
+                Channel subscriberUsedChannel = receiver.getCurrentChannel();
+
+                sendHeader(recipientPlayer, subscriberUsedChannel);
+                recipientPlayer.spigot().sendMessage(subscriberUsedChannel.getContent());
+                recipientPlayer.spigot().sendMessage(receiver.getChannelSelection());
             }
         }
 

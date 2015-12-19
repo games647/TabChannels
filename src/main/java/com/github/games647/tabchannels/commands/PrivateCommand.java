@@ -38,7 +38,14 @@ public class PrivateCommand implements CommandExecutor {
             } else if (self.equals(targetPlayer)) {
                 sender.sendMessage(ChatColor.DARK_RED + "You cannot message with yourself");
             } else {
-                startPrivateChat(self, targetPlayer);
+                //user who started the chat + the target user
+                String channelId = self.getUniqueId().toString() + targetPlayer.getUniqueId().toString();
+                String testId = targetPlayer.getUniqueId().toString() + self.getUniqueId().toString();
+                if (plugin.getChannels().containsKey(channelId) || plugin.getChannels().containsKey(testId)) {
+                    sender.sendMessage(ChatColor.DARK_RED + "This chat already exists");
+                } else {
+                    startPrivateChat(self, targetPlayer, channelId);
+                }
             }
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Missing receiver name");
@@ -47,14 +54,13 @@ public class PrivateCommand implements CommandExecutor {
         return true;
     }
 
-    private void startPrivateChat(Player self, Player targetPlayer) {
+    private void startPrivateChat(Player self, Player targetPlayer, String channelId) {
         //start a private chat
         Subscriber selfSubscriber = plugin.getSubscribers().get(self.getUniqueId());
 
         UUID targetUUID = targetPlayer.getUniqueId();
         Subscriber targetSubscriber = plugin.getSubscribers().get(targetUUID);
 
-        String channelId = self.getUniqueId().toString() + targetUUID.toString();
         Channel privateChannel = new Channel(channelId, "Private", true);
         selfSubscriber.subscribe(privateChannel);
         targetSubscriber.subscribe(privateChannel);

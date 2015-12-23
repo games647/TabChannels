@@ -9,6 +9,9 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.util.ChatPaginator;
 
 public class Channel {
@@ -24,7 +27,7 @@ public class Channel {
 
     public Channel(String id, String name, boolean privateChannel) {
         this.id = id;
-        this.name = name;
+        this.name = StringUtils.capitalize(name);
         this.privateChannel = privateChannel;
     }
 
@@ -36,7 +39,16 @@ public class Channel {
         return id;
     }
 
-    public String getName() {
+    public String getName(UUID self) {
+        if (self != null && privateChannel) {
+            for (UUID recipient : recipients) {
+                if (!self.equals(recipient)) {
+                    Player chatPartner = Bukkit.getPlayer(recipient);
+                    return chatPartner.getName();
+                }
+            }
+        }
+
         return name;
     }
 
@@ -61,12 +73,19 @@ public class Channel {
     }
 
     public void addMessage(String message) {
-        if (chatHistory.size() >= QUEUE_SIZE) {
+        //-1 because of the added space after a line break
+        String[] linesToAdd = ChatPaginator.wordWrap(message, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2 - 1);
+        int oversize = chatHistory.size() + linesToAdd.length - QUEUE_SIZE;
+        for (int i = 1; i <= oversize; i++) {
             //remove the oldest element
             chatHistory.remove(0);
         }
 
-        chatHistory.add(message);
+        chatHistory.add(linesToAdd[0]);
+        for (int i = 1; i < linesToAdd.length; i++) {
+            String messagePart = ' ' + linesToAdd[i];
+            chatHistory.add(messagePart);
+        }
     }
 
     public BaseComponent[] getContent() {
@@ -82,37 +101,14 @@ public class Channel {
             builder.append(previousMessage).append("\n");
         }
 
-        builder.append(addSeperator(26).toString()).color(ChatColor.GOLD);
+        builder.append(StringUtils.repeat("=", 26)).color(ChatColor.GOLD);
         builder.create();
         return builder.create();
     }
 
     public BaseComponent[] getFormattedHeader(String headerName) {
-        return new ComponentBuilder(buildHeader(headerName)).color(ChatColor.GREEN).create();
-    }
-
-    private String buildHeader(String headerName) {
-        //-2 because of a single space before and after the channel name
-        int remainingWidth = ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - headerName.length() - 4;
-
-        StringBuilder header = new StringBuilder(ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH);
-        //set a prefix
-        header.append(addSeperator(remainingWidth / 2));
-
-        header.append(' ').append(headerName).append(' ');
-
-        //set the suffix
-        header.append(addSeperator(remainingWidth / 2));
-
-        return header.toString();
-    }
-
-    private StringBuilder addSeperator(int size) {
-        StringBuilder builder = new StringBuilder(size);
-        for (int i = 1; i <= size; i++) {
-            builder.append('=');
-        }
-
-        return builder;
+        String title = ' ' + headerName + ' ';
+        String center = StringUtils.center(title, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2, '=');
+        return new ComponentBuilder(center).color(ChatColor.GREEN).create();
     }
 }

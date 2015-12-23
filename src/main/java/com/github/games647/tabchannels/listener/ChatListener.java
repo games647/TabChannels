@@ -29,21 +29,14 @@ public class ChatListener implements Listener {
         String chatMessage = String.format(format, sender.getDisplayName(), message);
 
         Subscriber subscriber = plugin.getSubscribers().get(sender.getUniqueId());
-        Channel currentChannel = subscriber.getCurrentChannel();
-        currentChannel.addMessage(chatMessage);
+        Channel messageChannel = subscriber.getCurrentChannel();
+        messageChannel.addMessage(chatMessage);
 
-        //channel selection
-        for (UUID recipient : currentChannel.getRecipients()) {
+        //Notify changes
+        for (UUID recipient : messageChannel.getRecipients()) {
             Subscriber receiver = plugin.getSubscribers().get(recipient);
             if (receiver != null) {
-                Player recipientPlayer = Bukkit.getPlayer(recipient);
-
-                receiver.notifyNewMessage(currentChannel);
-                Channel subscriberUsedChannel = receiver.getCurrentChannel();
-
-                sendHeader(recipientPlayer, subscriberUsedChannel);
-                recipientPlayer.spigot().sendMessage(subscriberUsedChannel.getContent());
-                recipientPlayer.spigot().sendMessage(receiver.getChannelSelection());
+                onNewMessage(recipient, receiver, messageChannel);
             }
         }
 
@@ -51,18 +44,14 @@ public class ChatListener implements Listener {
         playerChatEvent.getRecipients().clear();
     }
 
-    private void sendHeader(Player recipientPlayer, Channel currentChannel) {
-        String header = currentChannel.getName();
-        if (currentChannel.isPrivate()) {
-            for (UUID recipient : currentChannel.getRecipients()) {
-                if (!recipientPlayer.getUniqueId().equals(recipient)) {
-                    //found the chat partner who is different to the receiver of this message
-                    header = Bukkit.getPlayer(recipient).getName();
-                    break;
-                }
-            }
-        }
+    private void onNewMessage(UUID recipient, Subscriber receiver, Channel messageChannel) {
+        Player recipientPlayer = Bukkit.getPlayer(recipient);
 
-        recipientPlayer.spigot().sendMessage(currentChannel.getFormattedHeader(header));
+        receiver.notifyNewMessage(messageChannel);
+        Channel subscriberUsedChannel = receiver.getCurrentChannel();
+
+        recipientPlayer.spigot().sendMessage(messageChannel.getFormattedHeader(messageChannel.getName(recipient)));
+        recipientPlayer.spigot().sendMessage(subscriberUsedChannel.getContent());
+        recipientPlayer.spigot().sendMessage(receiver.getChannelSelection());
     }
 }

@@ -1,8 +1,8 @@
 package com.github.games647.tabchannels;
 
-import com.github.games647.tabchannels.listener.ChatListener;
 import com.github.games647.tabchannels.commands.PrivateCommand;
 import com.github.games647.tabchannels.commands.SwitchCommand;
+import com.github.games647.tabchannels.listener.ChatListener;
 import com.github.games647.tabchannels.listener.SubscriptionListener;
 import com.google.common.collect.Maps;
 
@@ -30,7 +30,7 @@ public class TabChannels extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new SubscriptionListener(this), this);
 
-        channels.put(globalChannel.getName(), globalChannel);
+        channels.put(globalChannel.getId(), globalChannel);
 
         //load all players if the server is already started like in a reload
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -52,7 +52,7 @@ public class TabChannels extends JavaPlugin {
 
     public void loadPlayer(Player player) {
         //automatically subscribe to the global channel
-        Subscriber subscriber = new Subscriber(globalChannel);
+        Subscriber subscriber = new Subscriber(player.getUniqueId(), globalChannel);
         subscribers.put(player.getUniqueId(), subscriber);
 
         globalChannel.addRecipient(player.getUniqueId());

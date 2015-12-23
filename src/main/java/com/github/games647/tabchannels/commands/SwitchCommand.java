@@ -37,7 +37,7 @@ public class SwitchCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.DARK_RED + "A channel with that name doesn't exist");
                 } else {
                     selfSubscriber.switchChannel(channel);
-                    player.spigot().sendMessage(channel.getFormattedHeader(channel.getName()));
+                    player.spigot().sendMessage(channel.getFormattedHeader(channel.getName(player.getUniqueId())));
                     player.spigot().sendMessage(channel.getContent());
                     player.spigot().sendMessage(selfSubscriber.getChannelSelection());
                 }
@@ -61,7 +61,7 @@ public class SwitchCommand implements TabExecutor {
             for (Channel channel : subscriptions) {
                 //show only channels where the player is already in
                 if (channel.getRecipients().contains(player.getUniqueId())) {
-                    suggestions.add(channel.getName());
+                    suggestions.add(channel.getName(((Player) sender).getUniqueId()));
                 }
             }
 

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -17,10 +18,12 @@ public class Subscriber {
 
     private static final String CHANNEL_SEPERATOR = " || ";
 
+    private final UUID selfUUID;
     private Channel currentChannel;
     private Map<Channel, MutableInt> unreadChannels = Maps.newHashMapWithExpectedSize(5);
 
-    public Subscriber(Channel global) {
+    public Subscriber(UUID uuid, Channel global) {
+        this.selfUUID = uuid;
         this.currentChannel = global;
         this.unreadChannels.put(global, new MutableInt());
     }
@@ -72,15 +75,15 @@ public class Subscriber {
     }
 
     public BaseComponent[] getChannelSelection() {
-        ComponentBuilder builder = new ComponentBuilder(" ");
-        builder.append(StringUtils.capitalize(currentChannel.getName())).bold(true).color(ChatColor.GREEN);
+        String currentLine = " " + StringUtils.capitalize(currentChannel.getName(selfUUID));
+        ComponentBuilder builder = new ComponentBuilder(currentLine).bold(true).color(ChatColor.GREEN);
 
         for (Map.Entry<Channel, MutableInt> entry : unreadChannels.entrySet()) {
             Channel channel = entry.getKey();
             int unreadMessage = entry.getValue().intValue();
             if (!channel.equals(currentChannel)) {
                 builder.append(CHANNEL_SEPERATOR).reset();
-                builder.append(StringUtils.capitalize(channel.getName()))
+                builder.append(channel.getName(selfUUID))
                         .color(ChatColor.GREEN)
                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/switch " + channel.getId()));
 

@@ -26,7 +26,7 @@ public class SubscriptionListener implements Listener {
         plugin.loadPlayer(joinEvent.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent quitEvent) {
         Player player = quitEvent.getPlayer();
         Subscriber subscriber = plugin.getSubscribers().remove(player.getUniqueId());

@@ -75,7 +75,7 @@ public class PrivateCommand implements CommandExecutor {
 
     private void sendNewChat(Subscriber subscriber, Player player) {
         Channel currentChannel = subscriber.getCurrentChannel();
-        player.spigot().sendMessage(currentChannel.getFormattedHeader(currentChannel.getName(player.getUniqueId())));
+        player.spigot().sendMessage(currentChannel.getHeader(currentChannel.getName(player.getUniqueId())));
         player.spigot().sendMessage(currentChannel.getContent());
         player.spigot().sendMessage(subscriber.getChannelSelection());
     }

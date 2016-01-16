@@ -106,7 +106,7 @@ public class Channel {
         return builder.create();
     }
 
-    public BaseComponent[] getFormattedHeader(String headerName) {
+    public BaseComponent[] getHeader(String headerName) {
         String title = ' ' + headerName + ' ';
         String center = StringUtils.center(title, ChatPaginator.GUARANTEED_NO_WRAP_CHAT_PAGE_WIDTH - 2, '=');
         return new ComponentBuilder(center).color(ChatColor.GREEN).create();

@@ -11,6 +11,9 @@ description: |
 website: ${project.url}
 dev-url: ${project.url}
 
+# Load after Protcollib for registering the packet listener
+sofdepend: [ProtocolLib]
+
 commands:
     switchchannel:
         description: 'Switches the chat channel'
@@ -21,3 +24,12 @@ commands:
         description: 'Creates a private chat channel with your partner'
         aliases: [tell, pm]
         permission: ${project.artifactId}.command.private
+
+    ${project.artifactId}:
+        description: 'All relevant commands to interact with chat channels'
+        aliases: [channel, tb]
+
+    createchannel:
+        description: 'Creates'
+        aliases: ['${project.artifactId}:create']
+        permission: ${project.artifactId}.command.create

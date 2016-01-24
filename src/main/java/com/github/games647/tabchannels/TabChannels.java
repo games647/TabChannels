@@ -1,5 +1,7 @@
 package com.github.games647.tabchannels;
 
+import com.github.games647.tabchannels.commands.ChannelCommand;
+import com.github.games647.tabchannels.commands.CreateCommand;
 import com.github.games647.tabchannels.commands.PrivateCommand;
 import com.github.games647.tabchannels.commands.SwitchCommand;
 import com.github.games647.tabchannels.listener.ChatListener;
@@ -23,12 +25,19 @@ public class TabChannels extends JavaPlugin {
     @Override
     public void onEnable() {
         //register commands
+        getCommand(this.getName().toLowerCase()).setExecutor(new ChannelCommand(this));
         getCommand("switchchannel").setExecutor(new SwitchCommand(this));
         getCommand("private").setExecutor(new PrivateCommand(this));
+        getCommand("createchannel").setExecutor(new CreateCommand(this));
 
         //register listeners
-        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new SubscriptionListener(this), this);
+//        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+//            //we cannot register it here because Java wouldn't know the type specification
+//            PacketChatListener.createInstance(this);
+//        } else {
+            getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+//        }
 
         channels.put(globalChannel.getId(), globalChannel);
 

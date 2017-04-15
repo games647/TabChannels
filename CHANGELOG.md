@@ -1,6 +1,6 @@
-#Changelog
+# Changelog
 
-####0.4
+#### 0.4
 
 Additions
 + Added create channel command
@@ -11,7 +11,7 @@ Changes/Fixes
 * Fixes compatibility with DeluxeChat
 * Fixes compatibility with Plugin messages
 
-####0.3
+#### 0.3
 
 Additions
 + Add custom line wrapping in order to make the header show even if the chat message is very long
